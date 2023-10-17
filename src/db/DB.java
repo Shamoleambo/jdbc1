@@ -12,15 +12,25 @@ public class DB {
 	private static Connection conn = null;
 
 	public static Connection getConnection() {
-		try {
-			if (conn == null) {
+		if (conn == null) {
+			try {
 				Properties props = loadProperties();
 				String url = props.getProperty("dburl");
 				conn = DriverManager.getConnection(url, props);
+			} catch (SQLException e) {
+				throw new DbException(e.getMessage());
 			}
-			return conn;
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
+		}
+		return conn;
+	}
+
+	public static void closeConnection() {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				throw new DbException(e.getMessage());
+			}
 		}
 	}
 
